@@ -19,7 +19,7 @@ const PatientPage = () => {
   const [error, setError] = useState<string | undefined>();
   const [diagnoses, setDiagnoses] = useState<Diagnosis[] | null>(null);
   // Inside the PatientPage component, add a handler for form submission
-  const handleHealthCheckFormSubmit = (values: EntryFormValues) => {
+  const handleCheckFormSubmit = (values: EntryFormValues) => {
     const sendEntry = async () => {
       try {
         await patientService.addEntryToPatient(id, values);
@@ -65,7 +65,7 @@ const PatientPage = () => {
       </Typography>
       <Typography>ssn: {patient.ssn}</Typography>
       <Typography>occupation: {patient.occupation}</Typography>
-      <EntryForm onSubmit={handleHealthCheckFormSubmit} diagnoses={diagnoses} />
+      <EntryForm onSubmit={handleCheckFormSubmit} diagnoses={diagnoses} />
       <h2>entries</h2>
       {patient.entries.map((entry: Entry) => (
         <EntryDetails entry={entry} diagnoses={diagnoses} />
