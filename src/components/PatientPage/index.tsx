@@ -2,7 +2,7 @@ import { Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import EntryDetails from './EntryDetails';
-import { HealthCheckForm, HealthCheckEntryFormValues } from './HealthCheckForm';
+import { EntryForm, EntryFormValues } from './EntryCheckForm';
 
 import patientService from '../../services/patients';
 import diagnosesService from '../../services/diagnoses';
@@ -19,14 +19,14 @@ const PatientPage = () => {
   const [error, setError] = useState<string | undefined>();
   const [diagnoses, setDiagnoses] = useState<Diagnosis[] | null>(null);
   // Inside the PatientPage component, add a handler for form submission
-  const handleHealthCheckFormSubmit = (values: HealthCheckEntryFormValues) => {
+  const handleHealthCheckFormSubmit = (values: EntryFormValues) => {
     const sendEntry = async () => {
       try {
         await patientService.addEntryToPatient(id, values);
         setError('');
       } catch (error) {
         console.log('🚀 ~ sendEntry ~ error:', error);
-        setError(error.message);
+        setError(error.response.data);
       }
     };
     sendEntry();
@@ -58,22 +58,18 @@ const PatientPage = () => {
 
   return (
     <div className='App'>
+      {/* Display error if there is one */}
+      {error && <Typography color='error'>{error}</Typography>}
       <Typography variant='h3'>
         {patient.name} {patient.gender === 'male' ? '♂️' : '♀️'}
       </Typography>
       <Typography>ssn: {patient.ssn}</Typography>
       <Typography>occupation: {patient.occupation}</Typography>
-      <HealthCheckForm
-        onSubmit={handleHealthCheckFormSubmit}
-        diagnoses={diagnoses}
-      />
+      <EntryForm onSubmit={handleHealthCheckFormSubmit} diagnoses={diagnoses} />
       <h2>entries</h2>
       {patient.entries.map((entry: Entry) => (
         <EntryDetails entry={entry} diagnoses={diagnoses} />
       ))}
-      {/* Implement further patient details and components as needed */}
-      {/* Display error if there is one */}
-      {error && <Typography color='error'>{error}</Typography>}
     </div>
   );
 };
