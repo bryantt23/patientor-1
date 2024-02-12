@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import {
   Box,
   Table,
@@ -10,7 +10,7 @@ import {
   TableBody
 } from '@mui/material';
 import axios from 'axios';
-import { Link } from 'react-router-dom';
+import Link, { useParams } from 'react-router-dom';
 
 import { PatientFormValues, Patient } from '../../types';
 import AddPatientModal from '../AddPatientModal';
@@ -19,49 +19,19 @@ import HealthRatingBar from '../HealthRatingBar';
 
 import patientService from '../../services/patients';
 
-interface Props {
-  patients: Patient[];
-  setPatients: React.Dispatch<React.SetStateAction<Patient[]>>;
-}
-
-const PatientListPage = ({ patients, setPatients }: Props) => {
-  const [modalOpen, setModalOpen] = useState<boolean>(false);
-  const [error, setError] = useState<string>();
-
-  const openModal = (): void => setModalOpen(true);
-
-  const closeModal = (): void => {
-    setModalOpen(false);
-    setError(undefined);
-  };
-
-  const submitNewPatient = async (values: PatientFormValues) => {
-    try {
-      const patient = await patientService.create(values);
-      setPatients(patients.concat(patient));
-      setModalOpen(false);
-    } catch (e: unknown) {
-      if (axios.isAxiosError(e)) {
-        if (e?.response?.data && typeof e?.response?.data === 'string') {
-          const message = e.response.data.replace(
-            'Something went wrong. Error: ',
-            ''
-          );
-          console.error(message);
-          setError(message);
-        } else {
-          setError('Unrecognized axios error');
-        }
-      } else {
-        console.error('Unknown error', e);
-        setError('Unknown error');
-      }
-    }
-  };
-
+const PatientPage = () => {
+  const { id } = useParams();
+  useEffect(() => {
+    const fetch = async () => {
+      const res = await patientService.getPatient(id);
+      console.log('🚀 ~ fetch ~ res:', res);
+    };
+    fetch();
+  }, [id]);
   return (
     <div className='App'>
-      <Box>
+      Hii
+      {/* <Box>
         <Typography align='center' variant='h6'>
           Patient list
         </Typography>
@@ -79,10 +49,7 @@ const PatientListPage = ({ patients, setPatients }: Props) => {
           {Object.values(patients).map((patient: Patient) => (
             <TableRow key={patient.id}>
               <TableCell>
-                <Typography component={Link} to={`/${patient.id}`}>
-                  {patient.name}
-                </Typography>
-                {/* <Link to={`/${patient.id}`}>{patient.name}</Link> */}
+                <Link to={``}>{patient.name}</Link>
               </TableCell>
               <TableCell>{patient.gender}</TableCell>
               <TableCell>{patient.occupation}</TableCell>
@@ -101,9 +68,9 @@ const PatientListPage = ({ patients, setPatients }: Props) => {
       />
       <Button variant='contained' onClick={() => openModal()}>
         Add New Patient
-      </Button>
+      </Button> */}
     </div>
   );
 };
 
-export default PatientListPage;
+export default PatientPage;
