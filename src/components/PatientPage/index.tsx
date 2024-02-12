@@ -3,7 +3,8 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import patientService from '../../services/patients';
-import { Entry, Patient } from '../../types';
+import diagnosesService from '../../services/diagnoses';
+import { Diagnosis, Entry, Patient } from '../../types';
 // Define the expected type for the parameters
 type Params = {
   id: string;
@@ -14,13 +15,17 @@ const PatientPage = () => {
   const { id } = useParams<Params>();
   const [patient, setPatient] = useState<Patient | null>(null);
   const [error, setError] = useState<string | undefined>();
+  const [diagnoses, setDiagnoses] = useState<Diagnosis[] | null>(null);
 
   useEffect(() => {
-    const fetchPatient = async () => {
+    const fetchData = async () => {
       try {
         const fetchedPatient = await patientService.getPatient(id);
-        console.log('🚀 ~ fetchPatient ~ fetchedPatient:', fetchedPatient);
+        console.log('🚀 ~ fetchData ~ fetchedPatient:', fetchedPatient);
         setPatient(fetchedPatient);
+        const diagnosesFromApi = await diagnosesService.getAll();
+        console.log('🚀 ~ fetchData ~ diagnosesFromApi:', diagnosesFromApi);
+        setDiagnoses(diagnosesFromApi);
       } catch (e) {
         setError('Failed to fetch patient details');
         console.error(e);
@@ -28,7 +33,7 @@ const PatientPage = () => {
     };
 
     if (id) {
-      fetchPatient();
+      fetchData();
     }
   }, [id]);
 
@@ -47,11 +52,13 @@ const PatientPage = () => {
       {patient.entries.map((entry: Entry) => (
         <div>
           <p>
-            {entry.data} {entry.description}
+            {entry.date} {entry.description}
           </p>
           <ul>
             {entry.diagnosisCodes?.map(code => (
-              <li>{code}</li>
+              <li key={code}>
+                {code} {diagnoses?.find(d => d.code === code)?.name}
+              </li>
             ))}
           </ul>
         </div>
