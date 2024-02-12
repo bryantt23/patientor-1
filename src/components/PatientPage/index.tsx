@@ -1,6 +1,7 @@
 import { Typography } from '@mui/material';
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+import EntryDetails from './EntryDetails';
 
 import patientService from '../../services/patients';
 import diagnosesService from '../../services/diagnoses';
@@ -50,18 +51,7 @@ const PatientPage = () => {
       <Typography>occupation: {patient.occupation}</Typography>
       <h2>entries</h2>
       {patient.entries.map((entry: Entry) => (
-        <div>
-          <p>
-            {entry.date} {entry.description}
-          </p>
-          <ul>
-            {entry.diagnosisCodes?.map(code => (
-              <li key={code}>
-                {code} {diagnoses?.find(d => d.code === code)?.name}
-              </li>
-            ))}
-          </ul>
-        </div>
+        <EntryDetails entry={entry} diagnoses={diagnoses} />
       ))}
       {/* Implement further patient details and components as needed */}
       {/* Display error if there is one */}
